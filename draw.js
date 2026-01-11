@@ -2,8 +2,8 @@ const canvas = new fabric.Canvas('canvas');
 let copiedObjects = null;
 canvas.setWidth(window.innerWidth);
 canvas.setHeight(window.innerHeight - 60);
-let highlightPaths = [];
 let isHighlighting = false;
+let highlightPaths = [];
 const wrapper = document.querySelector(".canvas-container");
 let canvasHeight = canvas.getHeight();
 
@@ -281,32 +281,35 @@ document.addEventListener('keydown', (e) => {
     Paste();
   }
 });
+
 function highlighter() {
   switchoffline();
 
   canvas.isDrawingMode = true;
   isHighlighting = true;
 
-  canvas.freeDrawingBrush = new fabric.PencilBrush(canvas);
-  canvas.freeDrawingBrush.color = 'rgba(255, 255, 0, 0.4)'; // yellow highlight
-  canvas.freeDrawingBrush.width = 15;
+  const brush = new fabric.PencilBrush(canvas);
+  brush.width = 20;
+  brush.color = 'rgba(255,255,0,0.4)'; // yellow highlight
+  canvas.freeDrawingBrush = brush;
 
-  canvas.on('path:created', function (e) {
-    if (isHighlighting) {
-      highlightPaths.push(e.path);
-      e.path.selectable = false;
-      e.path.evented = false;
-    }
-  });
-
-  canvas.on('mouse:up', function () {
-    if (!isHighlighting) return;
-
-    highlightPaths.forEach(p => canvas.remove(p));
-    highlightPaths = [];
-    canvas.requestRenderAll();
-  });
+  canvas.on('path:created', onHighlightPath);
+  canvas.on('mouse:up', clearHighlight);
 }
-
-
+function onHighlightPath(e) {
+  if (isHighlighting) {
+    highlightPaths.push(e.path);
+  }
+}
+function clearHighlight() {
+  highlightPaths.forEach(p => canvas.remove(p));
+  highlightPaths = [];
+  canvas.requestRenderAll();
+}
+function exitHighlighter() {
+  isHighlighting = false;
+  canvas.off('path:created', onHighlightPath);
+  canvas.off('mouse:up', clearHighlight);
+  canvas.isDrawingMode = false;
+}
 
