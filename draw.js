@@ -2,7 +2,8 @@ const canvas = new fabric.Canvas('canvas');
 let copiedObjects = null;
 canvas.setWidth(window.innerWidth);
 canvas.setHeight(window.innerHeight - 60);
-
+let highlightPaths = [];
+let isHighlighting = false;
 const wrapper = document.querySelector(".canvas-container");
 let canvasHeight = canvas.getHeight();
 
@@ -306,5 +307,6 @@ function highlighter() {
     canvas.requestRenderAll();
   });
 }
+
 
 
