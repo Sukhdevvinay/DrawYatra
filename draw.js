@@ -343,11 +343,29 @@ const squareCursor = 'data:image/svg+xml;base64,' + btoa(`
     <rect width="16" height="16" style="fill:none;stroke:black;stroke-width:1" />
   </svg>`);
 
-let selected_clr = 'black';
 const colorPicker = document.querySelector('.color-picker');
+if (!colorPicker.value) {
+  colorPicker.value = '#000000';
+}
+let selected_clr = colorPicker.value;
 
 // --- Helper to convert Hex to RGBA for transparency ---
-function hexToRgba(hex, alpha) {
+function hexToRgba(color, alpha) {
+  if (!color) {
+    return `rgba(0,0,0,${alpha})`;
+  }
+
+  let hex = color;
+  if (!hex.startsWith('#')) {
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.fillStyle = hex;
+    const normalized = ctx.fillStyle;
+    if (normalized.startsWith('rgb')) {
+      return normalized.replace('rgb', 'rgba').replace(')', `,${alpha})`);
+    }
+    hex = normalized;
+  }
+
   let r = parseInt(hex.slice(1, 3), 16);
   let g = parseInt(hex.slice(3, 5), 16);
   let b = parseInt(hex.slice(5, 7), 16);
