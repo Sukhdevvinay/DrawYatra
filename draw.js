@@ -385,17 +385,13 @@ function hexToRgba(hex, alpha) {
   return `rgba(${r},${g},${b},${alpha})`;
 }
 
-function applyColorToAllObjects(color) {
-  canvas.forEachObject(obj => {
-    if (typeof obj.set === 'function') {
-      if ('fill' in obj && obj.fill !== '') {
-        obj.set('fill', color);
-      }
-      if ('stroke' in obj && obj.stroke) {
-        obj.set('stroke', color);
-      }
-    }
-  });
+function resetCanvasForTheme() {
+  canvas.clear();
+  canvas.discardActiveObject();
+  canvas.isDrawingMode = false;
+  canvas.selection = true;
+  canvas.setWidth(window.innerWidth);
+  canvas.setHeight(window.innerHeight - 60);
   canvas.requestRenderAll();
 }
 
@@ -417,10 +413,10 @@ function setTheme(isDark) {
       : selected_clr;
   }
 
-  applyColorToAllObjects(selected_clr);
 }
 
 function toggleTheme() {
+  resetCanvasForTheme();
   setTheme(!isDarkMode);
 }
 
@@ -728,4 +724,5 @@ document.addEventListener('keydown', (e) => {
     Paste();
   }
 });
+
 
